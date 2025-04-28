@@ -1,24 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Counter</title>
-  <link rel="stylesheet" href="count.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Countdown</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #countdown {
+            font-size: 2em;
+            text-align: center;
+            background: rgba(236, 230, 230, 0.57);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgb(219, 214, 214);
+            margin-top: 20px;
+        }
+        #input-section {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 1em;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-  <h1 style="text-align: center;">Counter</h1>
-  <div class="counter-container">
-    <h1 class="counter" data-number="-150"></h1>
-    <h1 class="counter" data-number="-200"></h1>
-    <h1 class="counter" data-number="-250"></h1>
-    
-    <!-- <div class="counter" id="data-number">120</div>
-    <div class="counter" id="data-number">150</div>
-    <div class="counter" id="data-number">180</div> -->
-  </div>
+    <div id="input-section">
+        <h2>Enter Your Birthday</h2>
+        <input type="date" id="birthday" required>
+        <button onclick="startCountdown()">Start Countdown</button>
+    </div>
+    <div id="countdown"></div>
+    <script>
+        function getNextBirthday(birthday) {
+            const now = new Date();
+            const thisYear = now.getFullYear();
+            const birthDate = new Date(birthday);
+            birthDate.setFullYear(thisYear);
 
+            // If birthday has passed this year, set to next year
+            if (birthDate < now) {
+                birthDate.setFullYear(thisYear + 1);
+            }
+            return birthDate;
+        }
 
-    
-  <script src="js/script.js"></script>
+        function updateCountdown(targetDate) {
+            const now = new Date();
+            const timeDifference = targetDate - now;
+
+            if (timeDifference <= 0) {
+                document.getElementById('countdown').innerText = "Happy Birthday!";
+                return false;
+            }
+
+            const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+            document.getElementById('countdown').innerText = 
+                `Time until your birthday: ${days}d :${hours}h: ${minutes}m: ${seconds}s`;
+            return true;
+        }
+
+        function startCountdown() {
+            const birthdayInput = document.getElementById('birthday').value;
+            if (!birthdayInput) {
+                alert("Please enter your birthday!");
+                return;
+            }
+
+            const targetDate = getNextBirthday(birthdayInput);
+            document.getElementById('input-section').style.display = 'none';
+
+            // Initial call
+            updateCountdown(targetDate);
+
+            // Update every second
+            const interval = setInterval(() => {
+                if (!updateCountdown(targetDate)) {
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+    </script>
 </body>
 </html>
